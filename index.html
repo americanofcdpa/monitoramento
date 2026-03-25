@@ -1,112 +1,199 @@
-<!-- 🔻 SEU HTML TODO PERMANECE IGUAL ATÉ CHEGAR NO <script> FINAL 🔻 -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Monitor de Carga — Americano FC</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
 <script>
+const CONFIG = {
+  clube: "Americano FC",
+  categoria: "Profissional",
+  logo: "https://cdn-img.zerozero.pt/img/logos/equipas/3104_imgbank.png",
+  api: "https://script.google.com/macros/s/AKfycbz-An42rGbRpXx1hUXaHK_8qb9NquDK7a7RkdoDQPrnOhkXwRzCOIv8af3gh1qm26b_3w/exec"
+};
+</script>
 
-// ── APPLY CONFIG ──
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('clubName').textContent    = CONFIG.clube;
-  document.getElementById('clubCat').textContent     = CONFIG.categoria;
-  document.getElementById('clubLogo').src            = CONFIG.logoBase64;
-  document.title = `Monitor — ${CONFIG.clube} ${CONFIG.categoria}`;
-
-  document.documentElement.style.setProperty('--accent',     CONFIG.corPrimaria);
-  document.documentElement.style.setProperty('--accent-pos', CONFIG.corPrimaria);
-  document.documentElement.style.setProperty('--accent-pre', CONFIG.corSecundaria);
-  document.documentElement.style.setProperty('--danger',     CONFIG.corPrimaria);
-  document.documentElement.style.setProperty('--bg',         CONFIG.corFundo);
-  document.documentElement.style.setProperty('--text',       CONFIG.corTexto);
-
-  const now = new Date();
-  document.getElementById('dataForm').value = now.toISOString().split('T')[0];
-  document.getElementById('horaForm').value = now.toTimeString().slice(0,5);
-
-  buildScale('psrScale',  0, 10, 'psr');
-  buildScale('sonoScale', 1, 10, 'sono');
-  buildScale('pseScale',  0, 10, 'pse');
-  buildScale('painScale', 1, 10, 'pain');
-  buildBodyMap();
-  setMode('pre');
-});
-
-// ── STATE ──
-let mode = 'pre';
-let selectedPSR = null, selectedPSE = null, selectedSono = null, selectedPain = null;
-let selectedBodyParts = new Set();
-
-// ── FUNÇÃO PRINCIPAL (CORRIGIDA) ──
-function submitForm() {
-  const nome = document.getElementById('nomeAtleta').value.trim();
-
-  if (!nome) {
-    alert('Por favor, informe o nome do atleta.');
-    return;
-  }
-
-  if (mode === 'pre' && selectedPSR === null) {
-    alert('Preencha a PSR (Recuperação).');
-    return;
-  }
-
-  if (mode === 'pos' && selectedPSE === null) {
-    alert('Preencha a PSE (Esforço).');
-    return;
-  }
-
-  const data = {
-    clube: CONFIG.clube,
-    categoria: CONFIG.categoria,
-    tipo: mode === 'pre' ? 'Pré-Treino' : 'Pós-Treino',
-    atleta: nome,
-    posicao: document.getElementById('posicao').value,
-    data: document.getElementById('dataForm').value,
-    hora: document.getElementById('horaForm').value,
-
-    ...(mode === 'pre' ? {
-      psr: selectedPSR,
-      qualidadeSono: selectedSono,
-      horasSono: document.getElementById('horasSono').value,
-    } : {
-      pse: selectedPSE,
-      duracaoTreino: document.getElementById('duracaoTreino').value + ' ' + document.getElementById('duracaoUnidade').value,
-    }),
-
-    regioesDor: [...selectedBodyParts],
-    intensidadeDor: selectedBodyParts.size > 0 ? selectedPain : null,
-    notasLesao: document.getElementById('lesaoNotes').value,
-    observacoes: document.getElementById('obsGerais').value,
-    timestamp: new Date().toISOString(),
-  };
-
-  console.log("📊 Enviando:", data);
-
-  const url = "https://script.google.com/macros/s/AKfycbz-An42rGbRpXx1hUXaHK_8qb9NquDK7a7RkdoDQPrnOhkXwRzCOIv8af3gh1qm26b_3w/exec";
-
-  fetch(url, {
-    method: "POST",
-    mode: "no-cors",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(data)
-  })
-  .then(() => {
-    console.log("✅ Enviado com sucesso");
-
-    document.getElementById('formBody').style.display = 'none';
-    document.getElementById('submitBar').style.display = 'none';
-
-    const ss = document.getElementById('successScreen');
-    ss.classList.add('show');
-
-    document.getElementById('successSub').textContent =
-      `${CONFIG.categoria} — ${nome} — ${data.hora}`;
-  })
-  .catch((err) => {
-    console.error("❌ Erro:", err);
-    alert("Erro ao enviar. Verifique a conexão.");
-  });
+<style>
+body{
+  background:#0d0d0d;
+  color:#fff;
+  font-family:Inter;
+  margin:0;
 }
 
-// ── RESTANTE DO SEU JS (SEM ALTERAÇÃO) ──
-// buildScale, selectScale, setMode, resetForm, etc permanecem iguais
+/* HEADER */
+header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:16px;
+  border-bottom:1px solid #222;
+}
+header img{ width:50px; }
+header h2{
+  font-family:Oswald;
+  letter-spacing:2px;
+}
+
+/* CONTAINER */
+.container{
+  max-width:600px;
+  margin:auto;
+  padding:20px;
+}
+
+/* INPUT */
+input, select, textarea{
+  width:100%;
+  padding:10px;
+  margin-top:6px;
+  margin-bottom:14px;
+  background:#1a1a1a;
+  border:1px solid #333;
+  color:#fff;
+}
+
+/* SCALE */
+.scale{
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+  margin-bottom:15px;
+}
+.scale button{
+  flex:1;
+  padding:10px;
+  background:#1f1f1f;
+  border:1px solid #333;
+  color:#999;
+  cursor:pointer;
+}
+.scale button.selected{
+  background:#CC0000;
+  color:#fff;
+  border:none;
+}
+
+/* BUTTON */
+button.submit{
+  width:100%;
+  padding:15px;
+  background:#CC0000;
+  border:none;
+  color:#fff;
+  font-family:Oswald;
+  letter-spacing:2px;
+  cursor:pointer;
+}
+
+/* SUCCESS */
+.success{
+  display:none;
+  text-align:center;
+  margin-top:50px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <img id="logo">
+  <h2 id="club"></h2>
+</header>
+
+<div class="container" id="form">
+
+<input id="nome" placeholder="Nome do atleta">
+
+<label>PSR</label>
+<div id="psr" class="scale"></div>
+
+<label>Qualidade do Sono</label>
+<div id="sono" class="scale"></div>
+
+<label>Dor</label>
+<div id="dor" class="scale"></div>
+
+<textarea id="obs" placeholder="Observações"></textarea>
+
+<button class="submit" onclick="submitForm()">ENVIAR</button>
+
+</div>
+
+<div class="success" id="ok">
+  <h1>✅ Enviado!</h1>
+  <button onclick="location.reload()">Nova resposta</button>
+</div>
+
+<script>
+
+let psr=null, sono=null, dor=null;
+
+function criarEscala(id,min,max,tipo){
+  const el=document.getElementById(id);
+
+  for(let i=min;i<=max;i++){
+    const b=document.createElement("button");
+    b.innerText=i;
+
+    b.onclick=()=>{
+      [...el.children].forEach(x=>x.classList.remove("selected"));
+      b.classList.add("selected");
+
+      if(tipo=="psr") psr=i;
+      if(tipo=="sono") sono=i;
+      if(tipo=="dor") dor=i;
+    }
+
+    el.appendChild(b);
+  }
+}
+
+function iniciar(){
+  document.getElementById("club").innerText=CONFIG.clube;
+
+  const logo=document.getElementById("logo");
+  logo.src=CONFIG.logo;
+
+  logo.onerror=()=>logo.src="https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg";
+
+  criarEscala("psr",0,10,"psr");
+  criarEscala("sono",1,10,"sono");
+  criarEscala("dor",1,10,"dor");
+}
+
+function submitForm(){
+
+  const nome=document.getElementById("nome").value;
+
+  if(!nome){ alert("Informe o nome"); return; }
+
+  fetch(CONFIG.api,{
+    method:"POST",
+    body:JSON.stringify({
+      nome,
+      psr,
+      sono,
+      dor,
+      obs:document.getElementById("obs").value
+    })
+  })
+  .then(()=>{
+    document.getElementById("form").style.display="none";
+    document.getElementById("ok").style.display="block";
+  })
+  .catch(()=>alert("Erro ao enviar"));
+
+}
+
+window.onload=iniciar;
 
 </script>
+
+</body>
+</html>
