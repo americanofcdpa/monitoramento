@@ -27,36 +27,30 @@ ENVIAR AVALIAÇÃO
 </button>
 
 <script>
-
 function submitForm() {
 
   console.log("BOTÃO CLICADO");
 
   const data = {
-    atleta: document.getElementById("nomeAtleta").value,
-    posicao: document.getElementById("posicao").value,
-    qualidadeSono: document.getElementById("sono").value,
-    pse: document.getElementById("pse").value,
+    atleta: document.getElementById("nomeAtleta")?.value || "",
+    posicao: document.getElementById("posicao")?.value || "",
+    qualidadeSono: document.getElementById("sono")?.value || "",
+    pse: document.getElementById("pse")?.value || "",
     data: new Date().toLocaleDateString(),
     hora: new Date().toLocaleTimeString()
   };
 
- fetch('https://script.google.com/macros/s/AKfycbz-An42rGbRpXx1hUXaHK_8qb9NquDK7a7RkdoDQPrnOhkXwRzCOIv8af3gh1qm26b_3w/exec', {
-  method: 'POST',
-  mode: 'no-cors',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify(data)
-})
-.then(() => {
-  alert("Resposta enviada com sucesso!");
-})
-.catch(err => {
-  console.error("ERRO:", err);
-  alert("Erro ao enviar!");
-});
+  fetch('https://script.google.com/macros/s/AKfycbz-An42rGbRpXx1hUXaHK_8qb9NquDK7a7RkdoDQPrnOhkXwRzCOIv8af3gh1qm26b_3w/exec', {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  });
 
+  alert("Resposta enviada!");
+}
 </script>
 
 </body>
