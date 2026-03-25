@@ -28,6 +28,9 @@ const CONFIG = {
 
   /* Logo em base64 ou URL externa — substitua se necessário */
   logoBase64: "https://cdn-img.zerozero.pt/img/logos/equipas/3104_imgbank.png",
+
+  /* ⭐ URL do Google Apps Script — cole aqui o seu */
+  scriptURL: "https://script.google.com/macros/s/AKfycbz-An42rGbRpXx1hUXaHK_8qb9NquDK7a7RkdoDQPrnOhkXwRzCOIv8af3gh1qm26b_3w/exec",
 };
 
 /* ═══════════════════════════════════════════════════════════════
@@ -41,10 +44,10 @@ const CONFIG = {
     --surface: #161616;
     --surface2: #1f1f1f;
     --border: #2e2e2e;
-    --accent: #CC0000;      /* vermelho */
-    --accent2: #F5C000;     /* dourado */
-    --accent-pre: #F5C000;  /* pré-treino = dourado */
-    --accent-pos: #CC0000;  /* pós-treino = vermelho */
+    --accent: #CC0000;
+    --accent2: #F5C000;
+    --accent-pre: #F5C000;
+    --accent-pos: #CC0000;
     --text: #F0F0F0;
     --muted: #666;
     --danger: #CC0000;
@@ -349,11 +352,13 @@ const CONFIG = {
     padding: 13px 40px;
     cursor: pointer; transition: all 0.2s;
     flex: 1; max-width: 440px;
+    position: relative;
   }
   .submit-btn.pre { background: var(--accent-pre); color: #000; }
   .submit-btn.pos { background: var(--accent-pos); color: #fff; }
   .submit-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(0,0,0,0.5); }
   .submit-btn:active { transform: translateY(0); }
+  .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
   /* ── SUCCESS ── */
   .success-screen {
@@ -567,12 +572,11 @@ const CONFIG = {
 <script>
 // ── APPLY CONFIG ──
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('clubName').textContent    = CONFIG.clube;
-  document.getElementById('clubCat').textContent     = CONFIG.categoria;
-  document.getElementById('clubLogo').src            = CONFIG.logoBase64;
+  document.getElementById('clubName').textContent = CONFIG.clube;
+  document.getElementById('clubCat').textContent  = CONFIG.categoria;
+  document.getElementById('clubLogo').src         = CONFIG.logoBase64;
   document.title = `Monitor — ${CONFIG.clube} ${CONFIG.categoria}`;
 
-  // Apply colors from config
   document.documentElement.style.setProperty('--accent',     CONFIG.corPrimaria);
   document.documentElement.style.setProperty('--accent-pos', CONFIG.corPrimaria);
   document.documentElement.style.setProperty('--accent-pre', CONFIG.corSecundaria);
@@ -580,10 +584,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.documentElement.style.setProperty('--bg',         CONFIG.corFundo);
   document.documentElement.style.setProperty('--text',       CONFIG.corTexto);
 
-  // Set date/time
   const now = new Date();
   document.getElementById('dataForm').value = now.toISOString().split('T')[0];
-  document.getElementById('horaForm').value = now.toTimeString().slice(0,5);
+  document.getElementById('horaForm').value = now.toTimeString().slice(0, 5);
 
   buildScale('psrScale',  0, 10, 'psr');
   buildScale('sonoScale', 1, 10, 'sono');
@@ -622,16 +625,17 @@ function selectScale(key, val, containerId) {
   container.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('selected'));
   container.querySelector(`[data-v="${val}"]`).classList.add('selected');
   const displays = { psr:'psrDisplay', pse:'pseDisplay', sono:'sonoDisplay', pain:'painDisplay' };
-  if (key==='psr')  selectedPSR  = val;
-  if (key==='pse')  selectedPSE  = val;
-  if (key==='sono') selectedSono = val;
-  if (key==='pain') selectedPain = val;
+  if (key === 'psr')  selectedPSR  = val;
+  if (key === 'pse')  selectedPSE  = val;
+  if (key === 'sono') selectedSono = val;
+  if (key === 'pain') selectedPain = val;
   updateDisplay(displays[key], val);
 }
 
 function updateDisplay(id, val) {
   const el = document.getElementById(id);
-  el.textContent = val; el.classList.add('has-value');
+  el.textContent = val;
+  el.classList.add('has-value');
 }
 
 function buildBodyMap() {
@@ -662,98 +666,95 @@ function setMode(m) {
   document.querySelectorAll('.pre-only').forEach(el => el.setAttribute('data-hidden', m !== 'pre'));
   document.querySelectorAll('.pos-only').forEach(el => el.setAttribute('data-hidden', m !== 'pos'));
 
-  const span = document.getElementById('modeSpan');
-  const btn  = document.getElementById('submitBtn');
-  const desc = document.getElementById('modeDesc');
+  const span   = document.getElementById('modeSpan');
+  const btn    = document.getElementById('submitBtn');
+  const desc   = document.getElementById('modeDesc');
   const sTitle = document.getElementById('successTitle');
 
   if (m === 'pre') {
-    span.textContent = 'Pré-Treino'; span.className = 'accent-pre';
-    desc.textContent = 'Preencha antes de iniciar o treino';
-    btn.textContent  = 'Enviar Avaliação Pré-Treino'; btn.className = 'submit-btn pre';
-    sTitle.className = 'success-title pre';
+    span.textContent  = 'Pré-Treino'; span.className = 'accent-pre';
+    desc.textContent  = 'Preencha antes de iniciar o treino';
+    btn.textContent   = 'Enviar Avaliação Pré-Treino'; btn.className = 'submit-btn pre';
+    sTitle.className  = 'success-title pre';
   } else {
-    span.textContent = 'Pós-Treino'; span.className = 'accent-pos';
-    desc.textContent = 'Preencha ao término da sessão';
-    btn.textContent  = 'Enviar Avaliação Pós-Treino'; btn.className = 'submit-btn pos';
-    sTitle.className = 'success-title pos';
+    span.textContent  = 'Pós-Treino'; span.className = 'accent-pos';
+    desc.textContent  = 'Preencha ao término da sessão';
+    btn.textContent   = 'Enviar Avaliação Pós-Treino'; btn.className = 'submit-btn pos';
+    sTitle.className  = 'success-title pos';
   }
 }
 
+// ══════════════════════════════════════════════════════════════
+// ✅ submitForm — VERSÃO CORRIGIDA
+// ══════════════════════════════════════════════════════════════
 function submitForm() {
   const nome = document.getElementById('nomeAtleta').value.trim();
   if (!nome) { alert('Por favor, informe o nome do atleta.'); return; }
-  if (mode === 'pre' && selectedPSR  === null) { alert('Preencha a PSR (Recuperação).'); return; }
-  if (mode === 'pos' && selectedPSE  === null) { alert('Preencha a PSE (Esforço).'); return; }
+  if (mode === 'pre' && selectedPSR === null) { alert('Preencha a PSR (Recuperação).'); return; }
+  if (mode === 'pos' && selectedPSE === null) { alert('Preencha a PSE (Esforço).'); return; }
 
-  const data = {
-    clube:     CONFIG.clube,
-    categoria: CONFIG.categoria,
-    tipo:      mode === 'pre' ? 'Pré-Treino' : 'Pós-Treino',
-    atleta:    nome,
-    posicao:   document.getElementById('posicao').value,
-    data:      document.getElementById('dataForm').value,
-    hora:      document.getElementById('horaForm').value,
-    ...(mode === 'pre' ? {
-      psr:           selectedPSR,
-      qualidadeSono: selectedSono,
-      horasSono:     document.getElementById('horasSono').value,
-    } : {
-      pse:          selectedPSE,
-      duracaoTreino: document.getElementById('duracaoTreino').value + ' ' + document.getElementById('duracaoUnidade').value,
-    }),
-    regioesDor:    [...selectedBodyParts],
-    intensidadeDor: selectedBodyParts.size > 0 ? selectedPain : null,
-    notasLesao:    document.getElementById('lesaoNotes').value,
-    observacoes:   document.getElementById('obsGerais').value,
-    timestamp:     new Date().toISOString(),
-  };
+  // Desabilita o botão para evitar duplo envio
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
 
-  console.log('📊 DADOS DO MONITORAMENTO:', JSON.stringify(data, null, 2));
+  // ── Monta FormData com TODOS os campos ──
+  const formData = new FormData();
 
-  // ─── Integração futura ───────────────────────────────────────────
-const formData = new FormData();
+  // Campos comuns (Pré e Pós)
+  formData.append('timestamp',     new Date().toISOString());
+  formData.append('tipo',          mode === 'pre' ? 'Pré-Treino' : 'Pós-Treino');
+  formData.append('clube',         CONFIG.clube);
+  formData.append('categoria',     CONFIG.categoria);
+  formData.append('atleta',        nome);
+  formData.append('posicao',       document.getElementById('posicao').value);
+  formData.append('data',          document.getElementById('dataForm').value);
+  formData.append('hora',          document.getElementById('horaForm').value);
+  formData.append('regioesDor',    [...selectedBodyParts].join(', '));
+  formData.append('intensidadeDor', selectedPain !== null ? String(selectedPain) : '');
+  formData.append('notasLesao',    document.getElementById('lesaoNotes').value);
+  formData.append('observacoes',   document.getElementById('obsGerais').value);
 
-// dados normais
-formData.append("timestamp", data.timestamp);
-formData.append("tipo", data.tipo);
-formData.append("atleta", data.atleta);
-formData.append("posicao", data.posicao);
-formData.append("data", data.data);
-formData.append("hora", data.hora);
-formData.append("psr", data.psr || "");
+  // Campos exclusivos do Pré-Treino
+  if (mode === 'pre') {
+    formData.append('psr',           String(selectedPSR));
+    formData.append('qualidadeSono', selectedSono !== null ? String(selectedSono) : '');
+    formData.append('horasSono',     document.getElementById('horasSono').value);
+  }
 
-// ⭐ AGORA OS CAMPOS QUE ESTAVAM FALTANDO
-formData.append("qualidadeSono", selectedSono || "");
-formData.append("horasSono", document.getElementById("horasSono").value || "");
-formData.append("regioesDor", [...selectedBodyParts].join(", ") || "");
-formData.append("intensidadeDor", selectedPain || "");
-formData.append("notasLesao", document.getElementById("lesaoNotes").value || "");
-formData.append("observacoes", document.getElementById("obsGerais").value || "");
+  // Campos exclusivos do Pós-Treino
+  if (mode === 'pos') {
+    formData.append('pse',           String(selectedPSE));
+    formData.append('duracaoTreino', document.getElementById('duracaoTreino').value
+                                     + ' ' + document.getElementById('duracaoUnidade').value);
+  }
 
-fetch("https://script.google.com/macros/s/AKfycbz-An42rGbRpXx1hUXaHK_8qb9NquDK7a7RkdoDQPrnOhkXwRzCOIv8af3gh1qm26b_3w/exec", {
-  method: "POST",
-  mode: "no-cors",
-  body: formData
-});
+  // ── Envia ao Apps Script ──
+  // Nota: mode:"no-cors" é necessário para evitar erro de CORS com Apps Script.
+  // Com ele, a resposta não pode ser lida — mas o envio funciona normalmente.
+  // A tela de sucesso é exibida logo após o envio (não aguarda confirmação do servidor).
+  fetch(CONFIG.scriptURL, {
+    method: 'POST',
+    mode:   'no-cors',
+    body:   formData,
+  })
+  .catch(err => {
+    // Captura erros de rede (ex: sem internet)
+    console.error('Erro de rede ao enviar:', err);
+    alert('Erro ao enviar. Verifique sua conexão e tente novamente.');
+    btn.disabled = false;
+    btn.textContent = mode === 'pre' ? 'Enviar Avaliação Pré-Treino' : 'Enviar Avaliação Pós-Treino';
+  });
 
-.then(() => {
-  document.getElementById('formBody').style.display = 'none';
+  // Exibe tela de sucesso imediatamente após o disparo do envio
+  document.getElementById('formBody').style.display  = 'none';
   document.getElementById('submitBar').style.display = 'none';
   document.getElementById('successScreen').classList.add('show');
-})
-.catch(error => {
-  console.error("Erro:", error);
-});
-
-  document.getElementById('formBody').style.display = 'none';
-  document.getElementById('submitBar').style.display = 'none';
-  const ss = document.getElementById('successScreen');
-  ss.classList.add('show');
   document.getElementById('successSub').textContent =
-    `${CONFIG.categoria} — ${nome} — ${data.hora}`;
+    `${CONFIG.categoria} — ${nome} — ${document.getElementById('horaForm').value}`;
 }
 
+// ── RESET ──
 function resetForm() {
   selectedPSR = selectedPSE = selectedSono = selectedPain = null;
   selectedBodyParts.clear();
@@ -769,10 +770,14 @@ function resetForm() {
   document.getElementById('posicao').value = '';
   const now = new Date();
   document.getElementById('dataForm').value = now.toISOString().split('T')[0];
-  document.getElementById('horaForm').value = now.toTimeString().slice(0,5);
-  document.getElementById('formBody').style.display = 'block';
+  document.getElementById('horaForm').value = now.toTimeString().slice(0, 5);
+  document.getElementById('formBody').style.display  = 'block';
   document.getElementById('submitBar').style.display = 'flex';
   document.getElementById('successScreen').classList.remove('show');
+
+  // Reabilita o botão
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = false;
 }
 </script>
 </body>
