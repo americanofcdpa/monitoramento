@@ -41,20 +41,18 @@ function submitForm() {
     hora: new Date().toLocaleTimeString()
   };
 
-  fetch('https://script.google.com/macros/s/AKfycbwVMzrfHm1UqYSTQ2HvkwSwInJC_2fBvu9JOkmPD-8MVe7OR9Y0ymMaD8RqxIaRCC9T/exec', {
-    method: 'POST',
-    body: JSON.stringify(data)
-  })
-  .then(res => {
-    console.log("ENVIADO:", res);
-    alert("Resposta enviada com sucesso!");
-  })
-  .catch(err => {
-    console.error("ERRO:", err);
-    alert("Erro ao enviar!");
-  });
-
-}
+  fetch('https://script.google.com/macros/s/AKfycbz-An42rGbRpXx1hUXaHK_8qb9NquDK7a7RkdoDQPrnOhkXwRzCOIv8af3gh1qm26b_3w/exec', {
+  method: 'POST',
+  body: JSON.stringify(data)
+})
+.then(res => {
+  console.log("ENVIADO:", res);
+  alert("Resposta enviada com sucesso!");
+})
+.catch(err => {
+  console.error("ERRO:", err);
+  alert("Erro ao enviar!");
+});
 
 </script>
 
