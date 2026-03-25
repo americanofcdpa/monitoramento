@@ -712,19 +712,17 @@ function submitForm() {
   console.log('📊 DADOS DO MONITORAMENTO:', JSON.stringify(data, null, 2));
 
   // ─── Integração futura ───────────────────────────────────────────
-  fetch("https://script.google.com/macros/s/AKfycbz-An42rGbRpXx1hUXaHK_8qb9NquDK7a7RkdoDQPrnOhkXwRzCOIv8af3gh1qm26b_3w/exec", {
-mode: "no-cors",  
-method: "POST",
+fetch("https://script.google.com/macros/s/AKfycbz-An42rGbRpXx1hUXaHK_8qb9NquDK7a7RkdoDQPrnOhkXwRzCOIv8af3gh1qm26b_3w/exec", {
+  method: "POST",
+  mode: "no-cors", // ⭐ ESSA LINHA RESOLVE
   body: JSON.stringify(data),
   headers: {
     "Content-Type": "application/json"
   }
 })
-.then(res => res.text())
-.then(response => {
-  console.log("Resposta do Sheets:", response);
+.then(() => {
+  // ⚠️ não dá pra ler resposta no no-cors
 
-  // ✅ AGORA SIM dentro do fluxo correto
   document.getElementById('formBody').style.display = 'none';
   document.getElementById('submitBar').style.display = 'none';
   const ss = document.getElementById('successScreen');
@@ -734,6 +732,7 @@ method: "POST",
 })
 .catch(error => {
   console.error("Erro ao enviar:", error);
+  alert("Erro ao enviar");
 });
 
 
