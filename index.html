@@ -712,29 +712,29 @@ function submitForm() {
   console.log('📊 DADOS DO MONITORAMENTO:', JSON.stringify(data, null, 2));
 
   // ─── Integração futura ───────────────────────────────────────────
+const formData = new FormData();
+
+for (const key in data) {
+  if (Array.isArray(data[key])) {
+    formData.append(key, data[key].join(", "));
+  } else {
+    formData.append(key, data[key]);
+  }
+}
+
 fetch("https://script.google.com/macros/s/AKfycbz-An42rGbRpXx1hUXaHK_8qb9NquDK7a7RkdoDQPrnOhkXwRzCOIv8af3gh1qm26b_3w/exec", {
   method: "POST",
-  mode: "no-cors", // ⭐ ESSA LINHA RESOLVE
-  body: JSON.stringify(data),
-  headers: {
-    "Content-Type": "application/json"
-  }
+  mode: "no-cors",
+  body: formData
 })
 .then(() => {
-  // ⚠️ não dá pra ler resposta no no-cors
-
   document.getElementById('formBody').style.display = 'none';
   document.getElementById('submitBar').style.display = 'none';
-  const ss = document.getElementById('successScreen');
-  ss.classList.add('show');
-  document.getElementById('successSub').textContent =
-    `${CONFIG.categoria} — ${nome} — ${data.hora}`;
+  document.getElementById('successScreen').classList.add('show');
 })
 .catch(error => {
-  console.error("Erro ao enviar:", error);
-  alert("Erro ao enviar");
+  console.error("Erro:", error);
 });
-
 
   document.getElementById('formBody').style.display = 'none';
   document.getElementById('submitBar').style.display = 'none';
