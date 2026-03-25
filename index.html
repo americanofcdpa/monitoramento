@@ -1,46 +1,61 @@
 function submitForm() {
-
   const nome = document.getElementById('nomeAtleta').value.trim();
-  if (!nome) {
-    alert('Informe o nome do atleta');
-    return;
-  }
+  if (!nome) { alert('Por favor, informe o nome do atleta.'); return; }
+  if (mode === 'pre' && selectedPSR  === null) { alert('Preencha a PSR (Recuperação).'); return; }
+  if (mode === 'pos' && selectedPSE  === null) { alert('Preencha a PSE (Esforço).'); return; }
 
   const data = {
-    clube: CONFIG.clube,
+    clube:     CONFIG.clube,
     categoria: CONFIG.categoria,
-    tipo: mode === 'pre' ? 'Pré-Treino' : 'Pós-Treino',
-    atleta: nome,
-    posicao: document.getElementById('posicao').value,
-    data: document.getElementById('dataForm').value,
-    hora: document.getElementById('horaForm').value,
+    tipo:      mode === 'pre' ? 'Pré-Treino' : 'Pós-Treino',
+    atleta:    nome,
+    posicao:   document.getElementById('posicao').value,
+    data:      document.getElementById('dataForm').value,
+    hora:      document.getElementById('horaForm').value,
 
-    psr: selectedPSR,
-    qualidadeSono: selectedSono,
-    horasSono: document.getElementById('horasSono').value,
+    ...(mode === 'pre' ? {
+      psr:           selectedPSR,
+      qualidadeSono: selectedSono,
+      horasSono:     document.getElementById('horasSono').value,
+    } : {
+      pse:           selectedPSE,
+      duracaoTreino: document.getElementById('duracaoTreino').value + ' ' + document.getElementById('duracaoUnidade').value,
+    }),
 
-    pse: selectedPSE,
-    duracaoTreino: document.getElementById('duracaoTreino').value,
-
-    regioesDor: Array.from(selectedBodyParts),
-    intensidadeDor: selectedPain,
-    notasLesao: document.getElementById('lesaoNotes').value,
-    observacoes: document.getElementById('obsGerais').value,
-
-    timestamp: new Date().toISOString()
+    regioesDor:     [...selectedBodyParts],
+    intensidadeDor: selectedBodyParts.size > 0 ? selectedPain : null,
+    notasLesao:     document.getElementById('lesaoNotes').value,
+    observacoes:    document.getElementById('obsGerais').value,
+    timestamp:      new Date().toISOString(),
   };
 
-  fetch('https://script.google.com/macros/s/AKfycbz-An42rGbRpXx1hUXaHK_8qb9NquDK7a7RkdoDQPrnOhkXwRzCOIv8af3gh1qm26b_3w/exec', {
-    method: 'POST',
-    mode: 'no-cors',
+  console.log('📊 Enviando:', data);
+
+  // 🔗 SUA URL DO APPS SCRIPT
+  const url = "https://script.google.com/macros/s/AKfycbz-An42rGbRpXx1hUXaHK_8qb9NquDK7a7RkdoDQPrnOhkXwRzCOIv8af3gh1qm26b_3w/exec";
+
+  fetch(url, {
+    method: "POST",
+    mode: "no-cors", // importante para evitar bloqueio CORS
     headers: {
-      'Content-Type': 'application/json'
+      "Content-Type": "application/json"
     },
     body: JSON.stringify(data)
-  });
+  })
+  .then(() => {
+    console.log("✅ Enviado com sucesso");
 
-  // feedback visual (mantém seu layout)
-  document.getElementById('formBody').style.display = 'none';
-  document.getElementById('submitBar').style.display = 'none';
-  document.getElementById('successScreen').classList.add('show');
+    document.getElementById('formBody').style.display = 'none';
+    document.getElementById('submitBar').style.display = 'none';
+
+    const ss = document.getElementById('successScreen');
+    ss.classList.add('show');
+
+    document.getElementById('successSub').textContent =
+      `${CONFIG.categoria} — ${nome} — ${data.hora}`;
+  })
+  .catch(err => {
+    console.error("❌ Erro:", err);
+    alert("Erro ao enviar. Verifique sua conexão.");
+  });
 }
