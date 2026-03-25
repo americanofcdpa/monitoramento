@@ -722,10 +722,19 @@ function submitForm() {
 .then(res => res.text())
 .then(response => {
   console.log("Resposta do Sheets:", response);
+
+  // ✅ AGORA SIM dentro do fluxo correto
+  document.getElementById('formBody').style.display = 'none';
+  document.getElementById('submitBar').style.display = 'none';
+  const ss = document.getElementById('successScreen');
+  ss.classList.add('show');
+  document.getElementById('successSub').textContent =
+    `${CONFIG.categoria} — ${nome} — ${data.hora}`;
 })
 .catch(error => {
   console.error("Erro ao enviar:", error);
-});────────────────────────────────────────────────────────────────
+});
+
 
   document.getElementById('formBody').style.display = 'none';
   document.getElementById('submitBar').style.display = 'none';
