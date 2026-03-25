@@ -1,44 +1,33 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Monitor de Carga — Americano FC</title>
-</head>
-
-<body style="background:#0d0d0d;color:#fff;font-family:Arial;padding:20px">
-
-<h2>Monitoramento Americano FC</h2>
-
-<label>Nome do atleta:</label><br>
-<input type="text" id="nomeAtleta"><br><br>
-
-<label>Posição:</label><br>
-<input type="text" id="posicao"><br><br>
-
-<label>Qualidade do Sono:</label><br>
-<input type="number" id="sono"><br><br>
-
-<label>PSE:</label><br>
-<input type="number" id="pse"><br><br>
-
-<button onclick="submitForm()" id="submitBtn">
-ENVIAR AVALIAÇÃO
-</button>
-
-<script>
 function submitForm() {
 
-  console.log("BOTÃO CLICADO");
+  const nome = document.getElementById('nomeAtleta').value.trim();
+  if (!nome) {
+    alert('Informe o nome do atleta');
+    return;
+  }
 
   const data = {
-    atleta: document.getElementById("nomeAtleta")?.value || "",
-    posicao: document.getElementById("posicao")?.value || "",
-    qualidadeSono: document.getElementById("sono")?.value || "",
-    pse: document.getElementById("pse")?.value || "",
-    data: new Date().toLocaleDateString(),
-    hora: new Date().toLocaleTimeString()
+    clube: "Americano FC",
+    categoria: "Profissional",
+    tipo: mode === 'pre' ? 'Pré-Treino' : 'Pós-Treino',
+    atleta: nome,
+    posicao: document.getElementById('posicao').value,
+    data: document.getElementById('dataForm').value,
+    hora: document.getElementById('horaForm').value,
+
+    psr: selectedPSR,
+    qualidadeSono: selectedSono,
+    horasSono: document.getElementById('horasSono').value,
+
+    pse: selectedPSE,
+    duracaoTreino: document.getElementById('duracaoTreino').value,
+
+    regioesDor: Array.from(selectedBodyParts),
+    intensidadeDor: selectedPain,
+    observacoes: document.getElementById('obsGerais').value
   };
+
+  console.log("ENVIANDO:", data);
 
   fetch('https://script.google.com/macros/s/AKfycbz-An42rGbRpXx1hUXaHK_8qb9NquDK7a7RkdoDQPrnOhkXwRzCOIv8af3gh1qm26b_3w/exec', {
     method: 'POST',
@@ -49,9 +38,8 @@ function submitForm() {
     body: JSON.stringify(data)
   });
 
-  alert("Resposta enviada!");
+  // feedback visual
+  document.getElementById('formBody').style.display = 'none';
+  document.getElementById('submitBar').style.display = 'none';
+  document.getElementById('successScreen').classList.add('show');
 }
-</script>
-
-</body>
-</html>
