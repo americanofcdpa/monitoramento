@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="pageTitle">Monitor de Carga — Americano FC</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+<script>
+/* ╔══════════════════════════════════════════════════════════════╗
+   ║           ⚙️  CONFIGURAÇÃO DO CLUBE — EDITE AQUI            ║
+   ╚══════════════════════════════════════════════════════════════╝
+
+   Para usar em outro time ou categoria, altere apenas os campos
+   abaixo. Nada mais precisa ser modificado. */
+
+const CONFIG = {
+  clube:      "Americano FC",          // Nome do clube
+  categoria:  "Profissional",          // Ex: "Sub-20", "Sub-17", "Sub-15", "Feminino"
+  cidade:     "Campos dos Goytacazes", // Cidade do clube
+
+  /* Cores do clube (use códigos hexadecimais) */
+  corPrimaria:    "#CC0000",  // Vermelho Americano
+  corSecundaria:  "#F5C000",  // Dourado Americano
+  corFundo:       "#0d0d0d",  // Fundo geral (preto)
+  corSuperficie:  "#161616",  // Cards
+  corTexto:       "#F0F0F0",  // Texto
+
+  /* Logo em base64 ou URL externa — substitua se necessário */
+  logoBase64: "data:image/jpeg;base64,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",
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   FIM DA CONFIGURAÇÃO — não altere nada abaixo sem necessidade
+   ═══════════════════════════════════════════════════════════════ */
+</script>
+
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --surface: #161616;
+    --surface2: #1f1f1f;
+    --border: #2e2e2e;
+    --accent: #CC0000;      /* vermelho */
+    --accent2: #F5C000;     /* dourado */
+    --accent-pre: #F5C000;  /* pré-treino = dourado */
+    --accent-pos: #CC0000;  /* pós-treino = vermelho */
+    --text: #F0F0F0;
+    --muted: #666;
+    --danger: #CC0000;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    padding: 0 0 90px;
+    background-image:
+      radial-gradient(ellipse 50% 30% at 100% 0%, rgba(204,0,0,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 35% 25% at 0% 100%, rgba(245,192,0,0.05) 0%, transparent 50%);
+  }
+
+  /* ── HEADER ── */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 28px;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(13,13,13,0.88);
+    backdrop-filter: blur(14px);
+    gap: 12px;
+  }
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+  }
+  .club-logo {
+    width: 48px; height: 48px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+  .club-info { min-width: 0; }
+  .club-name {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .club-cat {
+    font-size: 11px;
+    color: var(--accent2);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 3px;
+  }
+
+  /* ── TOGGLE ── */
+  .mode-toggle {
+    display: flex;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .mode-btn {
+    padding: 8px 18px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .mode-btn.active[data-mode="pre"] { background: var(--accent-pre); color: #000; }
+  .mode-btn.active[data-mode="pos"] { background: var(--accent-pos); color: #fff; }
+
+  /* ── MAIN ── */
+  main { max-width: 660px; margin: 0 auto; padding: 32px 16px 0; }
+
+  .form-title {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: clamp(36px, 7vw, 56px);
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+  }
+  .form-title .accent-pre { color: var(--accent-pre); }
+  .form-title .accent-pos { color: var(--accent-pos); }
+
+  .form-subtitle {
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.25s;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0; transition: opacity 0.25s;
+  }
+  .card.pre-card::before { background: linear-gradient(90deg, transparent, var(--accent-pre), transparent); }
+  .card:focus-within { border-color: rgba(204,0,0,0.35); }
+  .card.pre-card:focus-within { border-color: rgba(245,192,0,0.35); }
+  .card:focus-within::before { opacity: 1; }
+
+  .card-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 20px;
+  }
+  .card-icon {
+    width: 34px; height: 34px; border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .icon-red  { background: rgba(204,0,0,0.12); }
+  .icon-gold { background: rgba(245,192,0,0.12); }
+  .icon-teal { background: rgba(0,180,130,0.12); }
+  .icon-gray { background: rgba(150,150,150,0.1); }
+
+  .card-label {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600; font-size: 16px;
+    letter-spacing: 0.8px; text-transform: uppercase;
+  }
+  .card-desc { font-size: 11px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
+
+  .field-label {
+    font-size: 11px; color: var(--muted);
+    letter-spacing: 0.8px; text-transform: uppercase;
+    margin-bottom: 8px; display: block;
+  }
+
+  input[type="text"], input[type="date"], input[type="time"], textarea, select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    padding: 10px 13px;
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+  input:focus, textarea:focus, select:focus { border-color: var(--accent); }
+  select option { background: var(--surface2); }
+
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+  /* ── SCALE ── */
+  .scale-track {
+    display: flex; gap: 5px; margin-bottom: 10px;
+  }
+  .scale-btn {
+    flex: 1; aspect-ratio: 1;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--surface2);
+    color: var(--muted);
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600; font-size: 15px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 42px;
+  }
+  .scale-btn:hover { border-color: var(--accent); color: var(--text); }
+  .scale-btn.selected { border-color: transparent; color: #000; }
+
+  /* PSE */
+  .pse-scale .scale-btn[data-v="0"].selected,
+  .pse-scale .scale-btn[data-v="1"].selected  { background:#4CAF50; color:#fff; }
+  .pse-scale .scale-btn[data-v="2"].selected,
+  .pse-scale .scale-btn[data-v="3"].selected  { background:#8BC34A; }
+  .pse-scale .scale-btn[data-v="4"].selected,
+  .pse-scale .scale-btn[data-v="5"].selected  { background:#F5C000; }
+  .pse-scale .scale-btn[data-v="6"].selected,
+  .pse-scale .scale-btn[data-v="7"].selected  { background:#FF7043; color:#fff; }
+  .pse-scale .scale-btn[data-v="8"].selected,
+  .pse-scale .scale-btn[data-v="9"].selected  { background:#E53935; color:#fff; }
+  .pse-scale .scale-btn[data-v="10"].selected { background:#b71c1c; color:#fff; }
+
+  /* PSR (inverso) */
+  .psr-scale .scale-btn[data-v="0"].selected,
+  .psr-scale .scale-btn[data-v="1"].selected  { background:#b71c1c; color:#fff; }
+  .psr-scale .scale-btn[data-v="2"].selected,
+  .psr-scale .scale-btn[data-v="3"].selected  { background:#E53935; color:#fff; }
+  .psr-scale .scale-btn[data-v="4"].selected,
+  .psr-scale .scale-btn[data-v="5"].selected  { background:#F5C000; }
+  .psr-scale .scale-btn[data-v="6"].selected,
+  .psr-scale .scale-btn[data-v="7"].selected  { background:#8BC34A; }
+  .psr-scale .scale-btn[data-v="8"].selected,
+  .psr-scale .scale-btn[data-v="9"].selected  { background:#4CAF50; color:#fff; }
+  .psr-scale .scale-btn[data-v="10"].selected { background:#2E7D32; color:#fff; }
+
+  /* Dor */
+  .pain-scale .scale-btn[data-v="1"].selected { background:#4CAF50; color:#fff; }
+  .pain-scale .scale-btn[data-v="2"].selected,
+  .pain-scale .scale-btn[data-v="3"].selected  { background:#8BC34A; }
+  .pain-scale .scale-btn[data-v="4"].selected,
+  .pain-scale .scale-btn[data-v="5"].selected  { background:#F5C000; }
+  .pain-scale .scale-btn[data-v="6"].selected,
+  .pain-scale .scale-btn[data-v="7"].selected  { background:#FF7043; color:#fff; }
+  .pain-scale .scale-btn[data-v="8"].selected,
+  .pain-scale .scale-btn[data-v="9"].selected  { background:#E53935; color:#fff; }
+  .pain-scale .scale-btn[data-v="10"].selected { background:#b71c1c; color:#fff; }
+
+  /* Sono */
+  .sleep-scale .scale-btn[data-v="1"].selected,
+  .sleep-scale .scale-btn[data-v="2"].selected  { background:#b71c1c; color:#fff; }
+  .sleep-scale .scale-btn[data-v="3"].selected,
+  .sleep-scale .scale-btn[data-v="4"].selected  { background:#E53935; color:#fff; }
+  .sleep-scale .scale-btn[data-v="5"].selected,
+  .sleep-scale .scale-btn[data-v="6"].selected  { background:#F5C000; }
+  .sleep-scale .scale-btn[data-v="7"].selected,
+  .sleep-scale .scale-btn[data-v="8"].selected  { background:#8BC34A; }
+  .sleep-scale .scale-btn[data-v="9"].selected,
+  .sleep-scale .scale-btn[data-v="10"].selected { background:#2E7D32; color:#fff; }
+
+  .scale-value-display {
+    text-align: center;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700; font-size: 36px;
+    color: var(--muted); height: 46px; line-height: 46px;
+    transition: color 0.2s; margin-bottom: 8px;
+  }
+  .scale-value-display.has-value { color: var(--text); }
+
+  .scale-labels {
+    display: flex; justify-content: space-between;
+    font-size: 10px; color: var(--muted); letter-spacing: 0.3px;
+  }
+
+  /* ── BODY MAP ── */
+  .body-map-grid {
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; margin-bottom: 10px;
+  }
+  .body-part-btn {
+    padding: 8px 4px; border: 1px solid var(--border);
+    border-radius: 7px; background: var(--surface2);
+    color: var(--muted);
+    font-family: 'Oswald', sans-serif;
+    font-size: 12px; font-weight: 500;
+    cursor: pointer; transition: all 0.15s; text-align: center;
+  }
+  .body-part-btn:hover { border-color: var(--danger); color: var(--text); }
+  .body-part-btn.selected {
+    border-color: var(--danger);
+    background: rgba(204,0,0,0.12);
+    color: var(--danger);
+  }
+
+  textarea { resize: vertical; min-height: 76px; line-height: 1.5; }
+
+  .divider { height: 1px; background: var(--border); margin: 18px 0; }
+
+  /* ── SUBMIT ── */
+  .submit-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    padding: 14px 16px;
+    background: rgba(13,13,13,0.92);
+    backdrop-filter: blur(14px);
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 200;
+  }
+  .submit-btn {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700; font-size: 15px;
+    letter-spacing: 2px; text-transform: uppercase;
+    border: none; border-radius: 9px;
+    padding: 13px 40px;
+    cursor: pointer; transition: all 0.2s;
+    flex: 1; max-width: 440px;
+  }
+  .submit-btn.pre { background: var(--accent-pre); color: #000; }
+  .submit-btn.pos { background: var(--accent-pos); color: #fff; }
+  .submit-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(0,0,0,0.5); }
+  .submit-btn:active { transform: translateY(0); }
+
+  /* ── SUCCESS ── */
+  .success-screen {
+    display: none; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 80px 20px; min-height: 60vh;
+  }
+  .success-screen.show { display: flex; }
+  .success-icon { font-size: 60px; margin-bottom: 18px; animation: pop 0.4s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes pop { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+  .success-title {
+    font-family: 'Oswald', sans-serif; font-weight: 700;
+    font-size: 38px; text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .success-title.pre { color: var(--accent-pre); }
+  .success-title.pos { color: var(--accent-pos); }
+  .success-sub { color: var(--muted); font-size: 13px; }
+  .new-btn {
+    margin-top: 28px;
+    font-family: 'Oswald', sans-serif; font-weight: 500;
+    font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase;
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--text); padding: 11px 26px; border-radius: 9px;
+    cursor: pointer; transition: border-color 0.2s;
+  }
+  .new-btn:hover { border-color: var(--accent); }
+
+  [data-hidden="true"] { display: none !important; }
+
+  @media(max-width:480px){
+    header { padding: 12px 14px; }
+    main { padding: 22px 12px 0; }
+    .card { padding: 18px 14px; }
+    .row2 { grid-template-columns: 1fr; }
+    .body-map-grid { grid-template-columns: repeat(2,1fr); }
+    .scale-btn { font-size: 13px; }
+    .mode-btn { padding: 7px 12px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <img id="clubLogo" class="club-logo" src="" alt="Logo">
+    <div class="club-info">
+      <div class="club-name" id="clubName"></div>
+      <div class="club-cat" id="clubCat"></div>
+    </div>
+  </div>
+  <div class="mode-toggle">
+    <button class="mode-btn active" data-mode="pre" onclick="setMode('pre')">Pré-Treino</button>
+    <button class="mode-btn" data-mode="pos" onclick="setMode('pos')">Pós-Treino</button>
+  </div>
+</header>
+
+<main id="mainContent">
+
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon">✅</div>
+    <div class="success-title" id="successTitle">Registrado!</div>
+    <div class="success-sub" id="successSub"></div>
+    <button class="new-btn" onclick="resetForm()">Nova Resposta</button>
+  </div>
+
+  <div id="formBody">
+    <div class="form-title" id="formTitle">Avaliação<br><span id="modeSpan" class="accent-pre">Pré-Treino</span></div>
+    <p class="form-subtitle" id="modeDesc">Preencha antes de iniciar o treino</p>
+
+    <!-- IDENTIFICAÇÃO -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-gray">👤</div>
+        <div>
+          <div class="card-label">Identificação</div>
+          <div class="card-desc">Dados do atleta e da sessão</div>
+        </div>
+      </div>
+      <div class="row2" style="margin-bottom:12px">
+        <div>
+          <label class="field-label">Nome do Atleta</label>
+          <input type="text" id="nomeAtleta" placeholder="Nome completo">
+        </div>
+        <div>
+          <label class="field-label">Data</label>
+          <input type="date" id="dataForm">
+        </div>
+      </div>
+      <div class="row2">
+        <div>
+          <label class="field-label">Horário</label>
+          <input type="time" id="horaForm">
+        </div>
+        <div>
+          <label class="field-label">Posição</label>
+          <select id="posicao">
+            <option value="">Selecione...</option>
+            <option>Goleiro</option>
+            <option>Lateral Direito</option>
+            <option>Lateral Esquerdo</option>
+            <option>Zagueiro</option>
+            <option>Volante</option>
+            <option>Meia</option>
+            <option>Meia-Atacante</option>
+            <option>Extremo Direito</option>
+            <option>Extremo Esquerdo</option>
+            <option>Centroavante</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- PSR (Pré) -->
+    <div class="card pre-card pre-only">
+      <div class="card-header">
+        <div class="card-icon icon-gold">🔋</div>
+        <div>
+          <div class="card-label">PSR — Recuperação</div>
+          <div class="card-desc">Como você se sente recuperado para este treino?</div>
+        </div>
+      </div>
+      <div class="scale-value-display" id="psrDisplay">—</div>
+      <div class="scale-track psr-scale" id="psrScale"></div>
+      <div class="scale-labels"><span>0 — Nenhuma</span><span>10 — Completa</span></div>
+    </div>
+
+    <!-- SONO (Pré) -->
+    <div class="card pre-card pre-only">
+      <div class="card-header">
+        <div class="card-icon icon-teal">🌙</div>
+        <div>
+          <div class="card-label">Qualidade do Sono</div>
+          <div class="card-desc">Como foi a noite de sono?</div>
+        </div>
+      </div>
+      <div class="scale-value-display" id="sonoDisplay">—</div>
+      <div class="scale-track sleep-scale" id="sonoScale"></div>
+      <div class="scale-labels"><span>1 — Péssimo</span><span>10 — Excelente</span></div>
+      <div style="margin-top:14px">
+        <label class="field-label">Horas dormidas</label>
+        <div class="row2">
+          <input type="text" id="horasSono" placeholder="Ex: 7.5">
+          <div style="display:flex;align-items:center;color:var(--muted);font-size:13px">horas</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PSE (Pós) -->
+    <div class="card pos-only" data-hidden="true">
+      <div class="card-header">
+        <div class="card-icon icon-red">⚡</div>
+        <div>
+          <div class="card-label">PSE — Esforço</div>
+          <div class="card-desc">Qual foi a intensidade percebida no treino?</div>
+        </div>
+      </div>
+      <div class="scale-value-display" id="pseDisplay">—</div>
+      <div class="scale-track pse-scale" id="pseScale"></div>
+      <div class="scale-labels"><span>0 — Repouso</span><span>10 — Máximo absoluto</span></div>
+      <div class="divider"></div>
+      <label class="field-label">Duração do treino</label>
+      <div class="row2">
+        <input type="text" id="duracaoTreino" placeholder="Ex: 90">
+        <select id="duracaoUnidade">
+          <option value="min">Minutos</option>
+          <option value="h">Horas</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- DOR / LESÃO -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-red">🩹</div>
+        <div>
+          <div class="card-label">Dor & Lesões</div>
+          <div class="card-desc">Selecione a região e indique a intensidade</div>
+        </div>
+      </div>
+      <label class="field-label">Região do corpo (múltipla seleção)</label>
+      <div class="body-map-grid" id="bodyMapGrid"></div>
+
+      <div id="painBlock" style="display:none">
+        <div class="divider"></div>
+        <label class="field-label">Intensidade da dor (1–10)</label>
+        <div class="scale-value-display" id="painDisplay">—</div>
+        <div class="scale-track pain-scale" id="painScale"></div>
+        <div class="scale-labels"><span>1 — Leve</span><span>10 — Insuportável</span></div>
+        <div style="margin-top:14px">
+          <label class="field-label">Descreva a dor / lesão</label>
+          <textarea id="lesaoNotes" placeholder="Tipo de dor, quando surgiu, localização exata..."></textarea>
+        </div>
+      </div>
+
+      <div style="margin-top:14px">
+        <label class="field-label">Observações para a comissão técnica</label>
+        <textarea id="obsGerais" placeholder="Comentários gerais sobre como você está se sentindo..."></textarea>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<div class="submit-bar" id="submitBar">
+  <button class="submit-btn pre" id="submitBtn" onclick="submitForm()">
+    Enviar Avaliação Pré-Treino
+  </button>
+</div>
+
+<script>
+// ── APPLY CONFIG ──
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('clubName').textContent    = CONFIG.clube;
+  document.getElementById('clubCat').textContent     = CONFIG.categoria;
+  document.getElementById('clubLogo').src            = CONFIG.logoBase64;
+  document.title = `Monitor — ${CONFIG.clube} ${CONFIG.categoria}`;
+
+  // Apply colors from config
+  document.documentElement.style.setProperty('--accent',     CONFIG.corPrimaria);
+  document.documentElement.style.setProperty('--accent-pos', CONFIG.corPrimaria);
+  document.documentElement.style.setProperty('--accent-pre', CONFIG.corSecundaria);
+  document.documentElement.style.setProperty('--danger',     CONFIG.corPrimaria);
+  document.documentElement.style.setProperty('--bg',         CONFIG.corFundo);
+  document.documentElement.style.setProperty('--text',       CONFIG.corTexto);
+
+  // Set date/time
+  const now = new Date();
+  document.getElementById('dataForm').value = now.toISOString().split('T')[0];
+  document.getElementById('horaForm').value = now.toTimeString().slice(0,5);
+
+  buildScale('psrScale',  0, 10, 'psr');
+  buildScale('sonoScale', 1, 10, 'sono');
+  buildScale('pseScale',  0, 10, 'pse');
+  buildScale('painScale', 1, 10, 'pain');
+  buildBodyMap();
+  setMode('pre');
+});
+
+// ── STATE ──
+let mode = 'pre';
+let selectedPSR = null, selectedPSE = null, selectedSono = null, selectedPain = null;
+let selectedBodyParts = new Set();
+
+const bodyParts = [
+  'Cabeça','Pescoço','Ombro D','Ombro E','Cotovelo D','Cotovelo E',
+  'Punho D','Punho E','Peitoral','Abdômen','Lombar','Quadril',
+  'Coxa D','Coxa E','Joelho D','Joelho E','Panturrilha D','Panturrilha E',
+  'Tornozelo D','Tornozelo E','Pé D','Pé E','Glúteo','Isquiotibial'
+];
+
+function buildScale(id, min, max, key) {
+  const el = document.getElementById(id);
+  for (let i = min; i <= max; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'scale-btn';
+    btn.dataset.v = i;
+    btn.textContent = i;
+    btn.onclick = () => selectScale(key, i, id);
+    el.appendChild(btn);
+  }
+}
+
+function selectScale(key, val, containerId) {
+  const container = document.getElementById(containerId);
+  container.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('selected'));
+  container.querySelector(`[data-v="${val}"]`).classList.add('selected');
+  const displays = { psr:'psrDisplay', pse:'pseDisplay', sono:'sonoDisplay', pain:'painDisplay' };
+  if (key==='psr')  selectedPSR  = val;
+  if (key==='pse')  selectedPSE  = val;
+  if (key==='sono') selectedSono = val;
+  if (key==='pain') selectedPain = val;
+  updateDisplay(displays[key], val);
+}
+
+function updateDisplay(id, val) {
+  const el = document.getElementById(id);
+  el.textContent = val; el.classList.add('has-value');
+}
+
+function buildBodyMap() {
+  const grid = document.getElementById('bodyMapGrid');
+  bodyParts.forEach(part => {
+    const btn = document.createElement('button');
+    btn.className = 'body-part-btn';
+    btn.textContent = part;
+    btn.onclick = () => toggleBodyPart(btn, part);
+    grid.appendChild(btn);
+  });
+}
+
+function toggleBodyPart(btn, part) {
+  if (selectedBodyParts.has(part)) {
+    selectedBodyParts.delete(part);
+    btn.classList.remove('selected');
+  } else {
+    selectedBodyParts.add(part);
+    btn.classList.add('selected');
+  }
+  document.getElementById('painBlock').style.display = selectedBodyParts.size > 0 ? 'block' : 'none';
+}
+
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === m));
+  document.querySelectorAll('.pre-only').forEach(el => el.setAttribute('data-hidden', m !== 'pre'));
+  document.querySelectorAll('.pos-only').forEach(el => el.setAttribute('data-hidden', m !== 'pos'));
+
+  const span = document.getElementById('modeSpan');
+  const btn  = document.getElementById('submitBtn');
+  const desc = document.getElementById('modeDesc');
+  const sTitle = document.getElementById('successTitle');
+
+  if (m === 'pre') {
+    span.textContent = 'Pré-Treino'; span.className = 'accent-pre';
+    desc.textContent = 'Preencha antes de iniciar o treino';
+    btn.textContent  = 'Enviar Avaliação Pré-Treino'; btn.className = 'submit-btn pre';
+    sTitle.className = 'success-title pre';
+  } else {
+    span.textContent = 'Pós-Treino'; span.className = 'accent-pos';
+    desc.textContent = 'Preencha ao término da sessão';
+    btn.textContent  = 'Enviar Avaliação Pós-Treino'; btn.className = 'submit-btn pos';
+    sTitle.className = 'success-title pos';
+  }
+}
+
+function submitForm() {
+  const nome = document.getElementById('nomeAtleta').value.trim();
+  if (!nome) { alert('Por favor, informe o nome do atleta.'); return; }
+  if (mode === 'pre' && selectedPSR  === null) { alert('Preencha a PSR (Recuperação).'); return; }
+  if (mode === 'pos' && selectedPSE  === null) { alert('Preencha a PSE (Esforço).'); return; }
+
+  const data = {
+    clube:     CONFIG.clube,
+    categoria: CONFIG.categoria,
+    tipo:      mode === 'pre' ? 'Pré-Treino' : 'Pós-Treino',
+    atleta:    nome,
+    posicao:   document.getElementById('posicao').value,
+    data:      document.getElementById('dataForm').value,
+    hora:      document.getElementById('horaForm').value,
+    ...(mode === 'pre' ? {
+      psr:           selectedPSR,
+      qualidadeSono: selectedSono,
+      horasSono:     document.getElementById('horasSono').value,
+    } : {
+      pse:          selectedPSE,
+      duracaoTreino: document.getElementById('duracaoTreino').value + ' ' + document.getElementById('duracaoUnidade').value,
+    }),
+    regioesDor:    [...selectedBodyParts],
+    intensidadeDor: selectedBodyParts.size > 0 ? selectedPain : null,
+    notasLesao:    document.getElementById('lesaoNotes').value,
+    observacoes:   document.getElementById('obsGerais').value,
+    timestamp:     new Date().toISOString(),
+  };
+
+  console.log("BOTÃO CLICADO");
+
+fetch('https://script.google.com/macros/s/AKfycbwVMzrfHm1UqYSTQ2HvkwSwInJC_2fBvu9JOkmPD-8MVe7OR9Y0ymMaD8RqxIaRCC9T/exec', {
+  method: 'POST',
+  body: JSON.stringify(data)
+});
+  // ────────────────────────────────────────────────────────────────
+
+  document.getElementById('formBody').style.display = 'none';
+  document.getElementById('submitBar').style.display = 'none';
+  const ss = document.getElementById('successScreen');
+  ss.classList.add('show');
+  document.getElementById('successSub').textContent =
+    `${CONFIG.categoria} — ${nome} — ${data.hora}`;
+}
+
+function resetForm() {
+  selectedPSR = selectedPSE = selectedSono = selectedPain = null;
+  selectedBodyParts.clear();
+  document.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('.scale-value-display').forEach(el => {
+    el.textContent = '—'; el.classList.remove('has-value');
+  });
+  document.querySelectorAll('.body-part-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('painBlock').style.display = 'none';
+  ['nomeAtleta','horasSono','duracaoTreino','lesaoNotes','obsGerais'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  document.getElementById('posicao').value = '';
+  const now = new Date();
+  document.getElementById('dataForm').value = now.toISOString().split('T')[0];
+  document.getElementById('horaForm').value = now.toTimeString().slice(0,5);
+  document.getElementById('formBody').style.display = 'block';
+  document.getElementById('submitBar').style.display = 'flex';
+  document.getElementById('successScreen').classList.remove('show');
+}
+</script>
+</body>
+</html>
