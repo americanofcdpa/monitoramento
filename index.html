@@ -713,7 +713,8 @@ function submitForm() {
 
   // ─── Integração futura ───────────────────────────────────────────
   fetch("https://script.google.com/macros/s/AKfycbz-An42rGbRpXx1hUXaHK_8qb9NquDK7a7RkdoDQPrnOhkXwRzCOIv8af3gh1qm26b_3w/exec", {
-  method: "POST",
+mode: "no-cors",  
+method: "POST",
   body: JSON.stringify(data),
   headers: {
     "Content-Type": "application/json"
