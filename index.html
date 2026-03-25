@@ -714,19 +714,29 @@ function submitForm() {
   // ─── Integração futura ───────────────────────────────────────────
 const formData = new FormData();
 
-for (const key in data) {
-  if (Array.isArray(data[key])) {
-    formData.append(key, data[key].join(", "));
-  } else {
-    formData.append(key, data[key]);
-  }
-}
+// dados normais
+formData.append("timestamp", data.timestamp);
+formData.append("tipo", data.tipo);
+formData.append("atleta", data.atleta);
+formData.append("posicao", data.posicao);
+formData.append("data", data.data);
+formData.append("hora", data.hora);
+formData.append("psr", data.psr || "");
+
+// ⭐ AGORA OS CAMPOS QUE ESTAVAM FALTANDO
+formData.append("qualidadeSono", selectedSono || "");
+formData.append("horasSono", document.getElementById("horasSono").value || "");
+formData.append("regioesDor", [...selectedBodyParts].join(", ") || "");
+formData.append("intensidadeDor", selectedPain || "");
+formData.append("notasLesao", document.getElementById("lesaoNotes").value || "");
+formData.append("observacoes", document.getElementById("obsGerais").value || "");
 
 fetch("https://script.google.com/macros/s/AKfycbz-An42rGbRpXx1hUXaHK_8qb9NquDK7a7RkdoDQPrnOhkXwRzCOIv8af3gh1qm26b_3w/exec", {
   method: "POST",
   mode: "no-cors",
   body: formData
-})
+});
+
 .then(() => {
   document.getElementById('formBody').style.display = 'none';
   document.getElementById('submitBar').style.display = 'none';
