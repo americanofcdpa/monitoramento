@@ -7,8 +7,8 @@ function submitForm() {
   }
 
   const data = {
-    clube: "Americano FC",
-    categoria: "Profissional",
+    clube: CONFIG.clube,
+    categoria: CONFIG.categoria,
     tipo: mode === 'pre' ? 'Pré-Treino' : 'Pós-Treino',
     atleta: nome,
     posicao: document.getElementById('posicao').value,
@@ -24,10 +24,11 @@ function submitForm() {
 
     regioesDor: Array.from(selectedBodyParts),
     intensidadeDor: selectedPain,
-    observacoes: document.getElementById('obsGerais').value
-  };
+    notasLesao: document.getElementById('lesaoNotes').value,
+    observacoes: document.getElementById('obsGerais').value,
 
-  console.log("ENVIANDO:", data);
+    timestamp: new Date().toISOString()
+  };
 
   fetch('https://script.google.com/macros/s/AKfycbz-An42rGbRpXx1hUXaHK_8qb9NquDK7a7RkdoDQPrnOhkXwRzCOIv8af3gh1qm26b_3w/exec', {
     method: 'POST',
@@ -38,7 +39,7 @@ function submitForm() {
     body: JSON.stringify(data)
   });
 
-  // feedback visual
+  // feedback visual (mantém seu layout)
   document.getElementById('formBody').style.display = 'none';
   document.getElementById('submitBar').style.display = 'none';
   document.getElementById('successScreen').classList.add('show');
