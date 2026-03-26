@@ -596,6 +596,7 @@ document.addEventListener('DOMContentLoaded', () => {
   buildScale('painScale', 1, 10, 'pain');
   buildBodyMap();
   setMode('pre');
+  carregarAtletas();
 });
 
 // ── STATE ──
@@ -797,6 +798,30 @@ function resetForm() {
   // Reabilita o botão
   const btn = document.getElementById('submitBtn');
   btn.disabled = false;
+}
+
+function carregarAtletas() {
+  fetch(CONFIG.scriptURL)
+    .then(res => res.json())
+    .then(data => {
+      const select = document.getElementById('nomeAtleta');
+
+      data.forEach(atleta => {
+        const option = document.createElement('option');
+        option.value = atleta.nome;
+        option.textContent = atleta.nome;
+        option.dataset.posicao = atleta.posicao;
+        select.appendChild(option);
+      });
+    })
+    .catch(err => console.error("Erro ao carregar atletas:", err));
+}
+
+function preencherPosicao() {
+  const select = document.getElementById('nomeAtleta');
+  const posicao = select.options[select.selectedIndex].dataset.posicao;
+
+  document.getElementById('posicao').value = posicao || "";
 }
 </script>
 </body>
