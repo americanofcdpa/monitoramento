@@ -802,8 +802,12 @@ function resetForm() {
 
 function carregarAtletas() {
   fetch(CONFIG.scriptURL)
-    .then(res => res.json())
-    .then(data => {
+    .then(response => response.text()) // 👈 muda aqui
+    .then(text => {
+      const data = JSON.parse(text); // 👈 parse manual
+
+      console.log("ATLETAS:", data);
+
       const select = document.getElementById('nomeAtleta');
 
       data.forEach(atleta => {
