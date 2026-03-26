@@ -688,7 +688,7 @@ function setMode(m) {
 // ✅ submitForm — VERSÃO CORRIGIDA
 // ══════════════════════════════════════════════════════════════
 function submitForm() {
-  const nome = document.getElementById('nomeAtleta').value.trim();
+  const nome = document.getElementById('nomeAtleta').value.trim().toUpperCase();
   if (!nome) { alert('Por favor, informe o nome do atleta.'); return; }
   if (mode === 'pre' && selectedPSR === null) { alert('Preencha a PSR (Recuperação).'); return; }
   if (mode === 'pos' && selectedPSE === null) { alert('Preencha a PSE (Esforço).'); return; }
