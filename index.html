@@ -733,6 +733,11 @@ function submitForm() {
   // Nota: mode:"no-cors" é necessário para evitar erro de CORS com Apps Script.
   // Com ele, a resposta não pode ser lida — mas o envio funciona normalmente.
   // A tela de sucesso é exibida logo após o envio (não aguarda confirmação do servidor).
+
+console.log("ENVIANDO:");
+for (let pair of formData.entries()) {
+  console.log(pair[0] + ": " + pair[1]);
+}
   fetch(CONFIG.scriptURL, {
     method: 'POST',
     mode:   'no-cors',
