@@ -441,7 +441,9 @@ const CONFIG = {
       <div class="row2" style="margin-bottom:12px">
         <div>
           <label class="field-label">Nome do Atleta</label>
-          <input type="text" id="nomeAtleta" placeholder="Nome completo">
+          <select id="nomeAtleta" onchange="preencherPosicao()">
+  <option value="">Selecione o atleta...</option>
+</select>
         </div>
         <div>
           <label class="field-label">Data</label>
